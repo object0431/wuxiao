@@ -25,23 +25,23 @@
             <groupId>com.asiainfo.mcp</groupId>
             <artifactId>tmc-common</artifactId>
             <version>1.0.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/tmc-common-1.0.2.jar</systemPath>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/src/main/resources/lib/tmc-common-1.0.2.jar</systemPath>-->
         </dependency>
         <dependency>
             <groupId>com.asiainfo.mcp</groupId>
             <artifactId>tmc-dingding</artifactId>
             <version>1.0.3</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/tmc-dingding-1.0.3.jar</systemPath>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/src/main/resources/lib/tmc-dingding-1.0.3.jar</systemPath>-->
         </dependency>
 
         <dependency>
             <groupId>com.asiainfo.mcp</groupId>
             <artifactId>tmc-employee</artifactId>
             <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/tmc-employee-1.0.0.jar</systemPath>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/src/main/resources/lib/tmc-employee-1.0.0.jar</systemPath>-->
         </dependency>
 
         <!-- sso 依赖 -->
@@ -49,8 +49,8 @@
             <groupId>com.sso.dpn</groupId>
             <artifactId>uac-sso-sdk</artifactId>
             <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/uac-sso-sdk-20200111-jar-with-dependencies.jar</systemPath>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/src/main/resources/lib/uac-sso-sdk-20200111-jar-with-dependencies.jar</systemPath>-->
 
         </dependency>
 

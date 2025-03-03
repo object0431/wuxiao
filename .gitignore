@@ -28,6 +28,8 @@ unpackage/
 *.ipr
 *.class
 target/*
+fsip-project/target/*
+fsip-authorize/target/*
 
 # misc
 .DS_Store

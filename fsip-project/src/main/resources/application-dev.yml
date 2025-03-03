@@ -1,12 +1,12 @@
 spring:
   datasource:
     username: root
-    password: 896682
-    url: jdbc:mysql://localhost:3306/fsip_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+    password: Aht@app@mysql
+    url: jdbc:mysql://my-server:3306/fsip_db?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
 #    url: jdbc:mysql://fsip_db?characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
   redis:
     cluster:
-      nodes: localhost:7001,localhost:7002,localhost:7003,localhost:7004,localhost:7005,localhost:7006
+      nodes: my-server:6381,my-server:6382,my-server:6383,my-server:6384,my-server:6385,my-server:6386
       maxIdle: 1000
       minIdle: 200
       maxTotal: 1000
@@ -28,7 +28,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
+        server-addr: my-server:8848
         #        register-enabled: true
         # namespace: c118c652-51fe-476d-aad3-147dc4f4945e
 
