@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FsipApprovalNodeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.asiainfo.fsip.entity.FsipApprovalNodeEntity">
+        <result column="ID" property="id" />
+        <result column="APPR_TYPE" property="apprType" />
+        <result column="APPR_ID" property="apprId" />
+        <result column="NODE_CODE" property="nodeCode" />
+        <result column="NODE_STATE" property="nodeState" />
+        <result column="NODE_NAME" property="nodeName" />
+        <result column="DEAL_STAFF_ID" property="dealStaffId" />
+        <result column="DEAL_STAFF_NAME" property="dealStaffName" />
+        <result column="SORT" property="sort" />
+        <result column="MAIN_POSITION" property="position" />
+        <result column="EXT_VALUE" property="extValue" />
+        <result column="APPR_NUMBER" property="apprNumber"/>
+        <result column="PENDING_CODE" property="pendingCode"/>
+        <result column="CITY_2_PROV" property="city2Prov"/>
+    </resultMap>
+
+    <insert id="batchInsertNode">
+        INSERT INTO FSIP_APPROVAL_NODE(APPR_TYPE, APPR_ID, NODE_CODE, DEAL_STAFF_ID, DEAL_STAFF_NAME, CITY_2_PROV)  VALUES
+        <foreach collection='nodeList' index='index' item='item'  separator=','>
+            (#{apprType}, #{apprId}, #{item.nodeCode}, #{item.dealStaffId}, #{item.dealStaffName}, #{item.city2Prov})
+        </foreach>
+    </insert>
+
+    <select id="selectByNode" resultType="String">
+        SELECT DEAL_STAFF_ID FROM FSIP_APPROVAL_NODE WHERE APPR_TYPE = #{apprType} AND APPR_ID = #{apprId} AND NODE_CODE = #{nodeCode}
+    </select>
+
+    <delete id="deleteByApprId">
+        DELETE FROM FSIP_APPROVAL_NODE WHERE APPR_TYPE = #{apprType} AND APPR_ID = #{apprId}
+    </delete>
+
+    <select id="selectApprovalNode" resultMap="BaseResultMap">
+        SELECT A.*, B.NODE_STATE FROM FSIP_APPROVAL_NODE A
+            LEFT JOIN FSIP_FLOW_LOG B ON (A.APPR_TYPE = B.FLOW_TYPE AND A.APPR_ID = B.EXT_ID AND A.NODE_CODE = B.NODE_CODE)
+        WHERE A.APPR_TYPE = #{apprType} AND A.APPR_ID = #{apprId}
+        ORDER BY A.UPDATE_TIME;
+    </select>
+
+    <select id="selectApprovalNodeByNode" resultMap="BaseResultMap">
+        SELECT A.* FROM FSIP_APPROVAL_NODE A
+            WHERE A.APPR_TYPE = #{apprType} AND A.APPR_ID = #{apprId} AND NODE_CODE = #{nodeCode}
+    </select>
+
+    <select id="selectApprovalNodeByType" resultMap="BaseResultMap">
+        SELECT DISTINCT A.*, B.NODE_STATE, B.NODE_NAME, B.SORT, B.EXT_VALUE, B.APPR_NUMBER
+        FROM FSIP_APPROVAL_NODE A
+            JOIN FSIP_APPROVAL_PARAM B ON (A.APPR_TYPE = B.APPR_TYPE AND A.NODE_CODE = B.NODE_CODE)
+        WHERE A.APPR_TYPE = #{apprType} AND A.APPR_ID = #{apprId}  ORDER BY B.SORT
+    </select>
+
+    <select id="selectApprovalNodeByApprTypeList" resultMap="BaseResultMap">
+        SELECT DISTINCT A.*, B.NODE_STATE, B.NODE_NAME, B.SORT, B.EXT_VALUE, B.APPR_NUMBER
+        FROM FSIP_APPROVAL_NODE A
+            JOIN FSIP_APPROVAL_PARAM B ON (A.APPR_TYPE = B.APPR_TYPE AND A.NODE_CODE = B.NODE_CODE)
+        WHERE A.APPR_TYPE in
+        <foreach collection="flowTypeList" item="value" separator="," open="(" close=")">
+            #{value}
+        </foreach>
+        AND A.APPR_ID = #{apprId}  ORDER BY B.SORT
+    </select>
+
+    <select id="selectApprovalNodeByPendingCode" resultMap="BaseResultMap">
+        SELECT A.* FROM FSIP_APPROVAL_NODE A
+            WHERE A.PENDING_CODE = #{pendingCode}
+    </select>
+    <select id="selectApprovalNodeByApprId" resultMap="BaseResultMap">
+        SELECT A.* FROM FSIP_APPROVAL_NODE A
+            WHERE A.PENDING_CODE IS NOT NULL AND CITY_2_PROV = #{city2Prov} AND A.APPR_ID IN
+        <foreach collection="projectIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

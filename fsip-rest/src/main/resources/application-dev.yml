@@ -1,0 +1,105 @@
+#server:
+#  port: 8081
+
+spring:
+  datasource:
+    username: root
+    password: 896682
+    url: jdbc:mysql://localhost:3306/fsip_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+  #    url: jdbc:mysql://fsip_db?characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
+  redis:
+    cluster:
+      nodes: localhost:7001,localhost:7002,localhost:7003,localhost:7004,localhost:7005,localhost:7006
+      maxIdle: 1000
+      minIdle: 200
+      maxTotal: 1000
+      maxWaitMills: 3000
+      connectionTimeout: 2000
+      testOnBorrow: true
+      testOnReturn: true
+      password:
+    database: 0
+    timeout: 2000
+    password:
+
+    jedis:
+      pool:
+        max-active: 50
+        max-idle: 30
+        maxWait: 50000
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        #        register-enabled: true
+        # namespace: c118c652-51fe-476d-aad3-147dc4f4945e
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+oss:
+  endpoint: http://10.238.9.62
+  accesskey: msgxHL08Ygiwr44p
+  accessKeySecret: OlUPnmTNAnnYzDZs9ogv3ec6LcPJt5
+  bucketName: bucket-prodpms
+
+  # PageHelper 分页插件配置
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params=count: countSql
+
+sso:
+  server:
+    url: https://uac.sso.chinaunicom.cn/
+    appId: HN202209091404211568118088131977217
+    whiteUrlList:
+    getUserInfo: http://10.125.143.169:8081/portal/get_user_info
+  login:
+    success: http://10.238.25.238:28081/success
+    error: http://10.238.25.238:28081/error
+  igore:
+    url: /health,/userCenter
+
+
+eip:
+  appId: hn117
+  authToken: 66666
+  url:
+    addPending: http://intf2.portal.unicom.local/eip_task_app/rest/taskappservice/addpending
+    updatePending: http://intf2.portal.unicom.local/eip_task_app/rest/taskappservice/updatependingstatus
+    getUserInfo: http://10.238.30.31:8081/portal/get_user_info
+
+#local:
+#  tmcrest:
+#    host: 10.238.25.238
+#    port: 28081
+#
+verify:
+  url:
+    certfType: http://10.238.25.238:28081/professionalTypeCheck?taskType=ZSLXSQ&certfTypeId=
+    plan: http://10.238.25.238:28081/trainingPlanApprove?taskType=PXJH&planId=
+    project: http://10.238.25.238:28081/initiationReview?taskType=PXLX&projectId=
+    settle: http://10.238.25.238:28081/trainingSettleApprove?taskType=JSSQ&settleId=
+    certf: http://10.238.25.238:28081/certificationCheck?taskType=RZSQ&certfId=
+    personalApply: http://10.238.25.238:28081/personalTraining/applyReview?taskType=GRPXSQ&applyId=
+    course: http://10.238.25.238:28081/coursewareManage/review?taskType=KJSH&coursewareId=
+
+##共享
+#ssp:
+#  url: http://10.238.25.238:9500
+#  key: d28fa12738e6x22gGmB8cdd28fa19c0d
+#
+#mobile:
+#  url:
+#    signIn: http://tmc.10010.io/training/signIn?projectId=
+#    appraise: http://tmc.10010.io/training/appraise?projectId=
+#
+#dingding:
+#  appSecret: kxF8LF8LhfmHxoHdbjTI8sY2LkUDq4D9B90iRVLs_b10-ZTqcepU-WUw-y4cN1MO
+#  url: http://134.160.26.31:9890
+#  appKey: dingiukasveckr4sg6km

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FsipLoginInitiationStatMapper">
+
+    <insert id="batchInsert">
+        INSERT INTO FSIP_LOGIN_INITIATION_STAT(STAT_MONTH, COMPANY_ID, COMPANY_NAME, DEPT_ID, DEPT_NAME
+        , STAFF_TOTAL, LOGIN_NUM, INITIATE_NUM, ACHIEVEMENT_NUM, UPDATE_TIME) VALUES
+        <foreach collection='dataList' index='index' item='item'  separator=','>
+            (#{item.statMonth}, #{item.companyId}, #{item.companyName}, #{item.deptId}, #{item.deptName}
+            , #{item.staffTotal}, #{item.loginNum}, #{item.initiateNum}, #{item.achievementNum}, NOW())
+        </foreach>
+    </insert>
+
+    <delete id="deleteByStatMonth">
+        DELETE FROM FSIP_LOGIN_INITIATION_STAT WHERE STAT_MONTH = #{statMonth}
+    </delete>
+    <select id="findByCidDid" resultType="com.asiainfo.fsip.model.LoginStatisticsModel">
+        SELECT STAT_MONTH,
+        COMPANY_ID,
+        COMPANY_NAME,
+        DEPT_ID,
+        DEPT_NAME,
+        STAFF_TOTAL,
+        LOGIN_NUM,
+        INITIATE_NUM,
+        ACHIEVEMENT_NUM
+        FROM fsip_login_initiation_stat
+        where
+        STAT_MONTH = #{req.startDate}
+        <if test="req.companyId!=null and req.companyId!=''">
+            AND COMPANY_ID = #{req.companyId}
+        </if>
+        <if test="req.deptId!=null and req.deptId!=''">
+            AND DEPT_ID = #{req.deptId}
+        </if>
+    </select>
+
+</mapper>

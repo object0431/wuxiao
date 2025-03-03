@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FsipConsultOrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.asiainfo.fsip.entity.FsipConsultOrderEntity">
+        <result column="ORDER_ID" property="orderId"/>
+        <result column="TARGET_ID" property="targetId"/>
+        <result column="TARGET_TYPE" property="targetType"/>
+        <result column="STATUS" property="status"/>
+        <result column="REQUEST" property="request"/>
+        <result column="RESPONSE" property="response"/>
+        <result column="REQ_TIME" property="reqTime"/>
+        <result column="RESP_TIME" property="respTime"/>
+        <result column="SCORE" property="score"/>
+        <result column="EXPERT_ID" property="expertId"/>
+        <result column="EXPERT_NAME" property="expertName"/>
+    </resultMap>
+
+    <select id="selectByTargetId" resultMap="BaseResultMap">
+        SELECT ORDER_ID, TARGET_ID, TARGET_TYPE, STATUS, REQUEST, RESPONSE, REQ_TIME, RESP_TIME, SCORE, EXPERT_ID, EXPERT_NAME
+        FROM FSIP_CONSULT_ORDER WHERE TARGET_ID = #{targetId}
+    </select>
+
+    <select id="selectHisByExpertId" resultMap="BaseResultMap">
+        SELECT ORDER_ID, TARGET_ID, TARGET_TYPE, STATUS, REQUEST, RESPONSE, REQ_TIME, RESP_TIME, SCORE, EXPERT_ID, EXPERT_NAME
+        FROM FSIP_CONSULT_ORDER WHERE TARGET_ID = #{targetId} AND EXPERT_ID = #{expertId}
+        ORDER BY REQ_TIME DESC
+    </select>
+
+    <insert id="batchInsert">
+        INSERT INTO FSIP_CONSULT_ORDER(ORDER_ID, TARGET_ID, TARGET_TYPE, STATUS, REQUEST, DING_TASK_ID
+        , EXPERT_ID, EXPERT_NAME, REQ_TIME) VALUES
+        <foreach collection='orderList' index='index' item='item'  separator=','>
+            (#{item.orderId}, #{item.targetId}, #{item.targetType}, #{item.status}, #{item.request}, #{item.dingTaskId}
+            , #{item.expertId}, #{item.expertName}, NOW())
+        </foreach>
+    </insert>
+</mapper>

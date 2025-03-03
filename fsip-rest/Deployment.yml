@@ -1,0 +1,49 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: fsip-rest
+  namespace: fsip
+  labels:
+    k8s-app: fsip-rest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: fsip-rest
+  template:
+    metadata:
+      name: fsip-rest
+      labels:
+        k8s-app: fsip-rest
+    spec:
+      hostAliases:
+        - ip: "10.172.145.169"
+          hostnames:
+            - "intf2.portal.unicom.local"
+            - "name.portal.unicom.local"
+      containers:
+        - name: fsip-rest
+          image: 'harbor.dcos.xixian.unicom.local/tmc/fsip-rest:20230815095837'
+          env:
+            - name: PPAPPLICATION_NAME
+              value: fsip-rest
+            - name: NACOS_META_URL
+              value: 10.238.52.83:8848
+            - name: TMC_PROFILE
+              value: prod
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: 1Gi
+            limits:
+              memory: 4Gi
+          livenessProbe:
+            httpGet:
+              path: /fsip-rest/actuator/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 90
+            timeoutSeconds: 2
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3

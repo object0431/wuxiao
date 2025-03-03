@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FsipFlowLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.asiainfo.fsip.entity.FsipFlowLogEntity">
+        <id column="ID" property="id"/>
+        <result column="FLOW_TYPE" property="flowType"/>
+        <result column="EXT_ID" property="extId"/>
+        <result column="NODE_CODE" property="nodeCode"/>
+        <result column="NODE_NAME" property="nodeName"/>
+        <result column="NODE_STATE" property="nodeState"/>
+        <result column="NODE_STATE_NAME" property="nodeStateName"/>
+        <result column="START_TIME" property="startTime"/>
+        <result column="END_TIME" property="endTime"/>
+        <result column="DEAL_STAFF_ID" property="dealStaffId"/>
+        <result column="DEAL_STAFF_NAME" property="dealStaffName"/>
+        <result column="REMARK" property="remark"/>
+        <result column="SORT" property="sort"/>
+    </resultMap>
+
+    <select id="selectByTypeAndId" resultMap="BaseResultMap">
+        SELECT ID, FLOW_TYPE, EXT_ID, NODE_CODE, NODE_NAME, NODE_STATE, START_TIME, END_TIME, DEAL_STAFF_ID, DEAL_STAFF_NAME, REMARK,SORT
+        FROM FSIP_FLOW_LOG WHERE FLOW_TYPE = #{flowType} AND EXT_ID = #{extId} ORDER BY ID DESC
+    </select>
+
+    <select id="selectByFlowTypeListAndExtId" resultMap="BaseResultMap">
+        SELECT ID, FLOW_TYPE, EXT_ID, NODE_CODE, NODE_NAME, NODE_STATE, START_TIME, END_TIME, DEAL_STAFF_ID, DEAL_STAFF_NAME, REMARK,SORT
+        FROM FSIP_FLOW_LOG WHERE FLOW_TYPE IN
+        <foreach collection="flowTypeList" item="value" separator="," open="(" close=")">
+            #{value}
+        </foreach>
+        AND EXT_ID = #{extId} ORDER BY ID DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,89 @@
+spring:
+  datasource:
+    username: root
+    password: 896682
+    url: jdbc:mysql://localhost:3306/fsip_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+#    url: jdbc:mysql://fsip_db?characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
+  redis:
+    cluster:
+      nodes: localhost:7001,localhost:7002,localhost:7003,localhost:7004,localhost:7005,localhost:7006
+      maxIdle: 1000
+      minIdle: 200
+      maxTotal: 1000
+      maxWaitMills: 3000
+      connectionTimeout: 2000
+      testOnBorrow: true
+      testOnReturn: true
+      password:
+    database: 0
+    timeout: 2000
+    password:
+
+    jedis:
+      pool:
+        max-active: 50
+        max-idle: 30
+        maxWait: 50000
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        #        register-enabled: true
+        # namespace: c118c652-51fe-476d-aad3-147dc4f4945e
+
+eip:
+  appId: hn117
+  authToken: 66666
+  url:
+    addPending: http://intf2.portal.unicom.local/eip_task_app/rest/taskappservice/addpending
+    updatePending: http://intf2.portal.unicom.local/eip_task_app/rest/taskappservice/updatependingstatus
+    getUserInfo: http://10.238.30.31:8081/portal/get_user_info
+
+sso:
+  server:
+    url: https://uac.sso.chinaunicom.cn/
+    appId: HN202209091404211568118088131977217
+    whiteUrlList:
+    getUserInfo: http://10.125.143.169:8081/portal/get_user_info
+  login:
+    success: http://10.238.25.238:28081/success
+    error: http://10.238.25.238:28081/error
+  igore:
+    url: /health,/userCenter
+
+#
+#
+## 文件上传
+#minio:
+#  url: http://10.19.85.84:9000
+#  accessKey: minioadmin
+#  secretKey: minioadmin
+#  bucketName: bpme
+## 联通云文件上传
+#cos:
+#  bucket: hnkk-dev
+#  accessKey: E15PZNPIHF32M496GAKU
+#  secretKey: w3zIOCECWkjeuoc1AEPlnTIZtC6BSnA2gdHtKocU
+#  serviceEndpoint: cos.xx-tst.cos.tg.unicom.local
+#  region: xx-tst
+#  fileBaseUrl: https://cos.xx-tst.cos.tg.unicom.local/142103562682:hnkk-dev/
+## 文件上传服务选择
+#fileUploadConfigParam: minio
+#
+oss:
+  endpoint: http://10.125.119.169
+  accesskey: GFzGKhYPORNpzwl8
+  accessKeySecret: pNYaqniCxlIp0nYZ7UQS7V0d50w6HI
+  bucketName: bucket-testpms
+
+verify:
+  url:
+    certfType: http://10.238.25.238:28081/professionalTypeCheck?taskType=ZSLXSQ&certfTypeId=
+    plan: http://10.238.25.238:28081/trainingPlanApprove?taskType=PXJH&planId=
+    project:
+      pc: http://10.238.25.238:28081/initiationReview?taskType=PXLX&projectId=
+    settle: http://10.238.25.238:28081/trainingSettleApprove?taskType=JSSQ&settleId=
+    certf: http://10.238.25.238:28081/certificationCheck?taskType=RZSQ&certfId=
+    personalApply: http://10.238.25.238:28081/personalTraining/applyReview?taskType=GRPXSQ&applyId=
+    course: http://10.238.25.238:28081/coursewareManage/review?taskType=KJSH&coursewareId=

@@ -1,0 +1,36 @@
+#spring:
+#  profiles:
+#    active: ${TMC_PROFILE:dev}
+#  cloud:
+#    nacos:
+#      username: ${NACOS_USER:nacos}
+#      password: ${NACOS_PWD:hnnacos123!}
+#      discovery:
+#        server-addr: ${NACOS_META_URL:10.125.131.21:8848}
+#      config:
+#        namespace: fsip
+#        prefix: common
+#        server-addr: ${NACOS_META_URL:10.125.131.21:8848}
+#        file-extension: yaml
+#        group: HN
+#    loadbalancer:
+#      ribbon:
+#        enabled: false
+spring:
+  profiles:
+    active: ${TMC_PROFILE:dev}
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos
+      discovery:
+        server-addr: localhost:8848
+      config:
+        namespace: fsip
+        prefix: common
+        server-addr: localhost:8848
+        file-extension: yaml
+        group: HN
+    loadbalancer:
+      ribbon:
+        enabled: false

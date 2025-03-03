@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <localRepository>/tmp/cache/.m2/</localRepository>
+  <servers>
+    <server>
+      <username>hngxfw</username>
+      <password>{BWxisKUbtwMHMTJne6R62nfVGP6Ln56CWyG0YkI8DdI=}</password>
+      <id>releases</id>
+    </server>
+    <server>
+      <username>hngxfw</username>
+      <password>{BWxisKUbtwMHMTJne6R62nfVGP6Ln56CWyG0YkI8DdI=}</password>
+      <id>snapshots</id>
+    </server>
+  </servers>
+  <mirrors>
+    <mirror>
+      <mirrorOf>*</mirrorOf>
+      <name>hngxfw-maven-virtual</name>
+      <url>http://ccp.tianti.tg.unicom.local/artifactory/hngxfw-maven-virtual</url>
+      <id>hngxfw-maven-virtual</id>
+    </mirror>
+  </mirrors>
+  <profiles>
+    <profile>
+      <repositories>
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>releases</id>
+          <name>hngxfw-maven-virtual</name>
+          <url>http://ccp.tianti.tg.unicom.local/artifactory/hngxfw-maven-virtual</url>
+        </repository>
+        <repository>
+          <snapshots />
+          <id>snapshots</id>
+          <name>hngxfw-maven-virtual</name>
+          <url>http://ccp.tianti.tg.unicom.local/artifactory/hngxfw-maven-virtual</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>releases</id>
+          <name>hngxfw-maven-virtual</name>
+          <url>http://ccp.tianti.tg.unicom.local/artifactory/hngxfw-maven-virtual</url>
+        </pluginRepository>
+        <pluginRepository>
+          <snapshots />
+          <id>snapshots</id>
+          <name>hngxfw-maven-virtual</name>
+          <url>http://ccp.tianti.tg.unicom.local/artifactory/hngxfw-maven-virtual</url>
+        </pluginRepository>
+      </pluginRepositories>
+      <id>artifactory</id>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>artifactory</activeProfile>
+  </activeProfiles>
+</settings>
+<!-- 仓库能不能直接拉取
+      jar包直接整个打包
+      jar以打包
+-->

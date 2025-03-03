@@ -1,0 +1,44 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: fsip-project
+  namespace: fsip
+  labels:
+    k8s-app: fsip-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: fsip-project
+  template:
+    metadata:
+      name: fsip-project
+      labels:
+        k8s-app: fsip-project
+    spec:
+      containers:
+        - name: fsip-project
+          image: 'harbor.dcos.xixian.unicom.local/tmc/fsip-project:20230815163220'
+          env:
+            - name: PPAPPLICATION_NAME
+              value: fsip-project
+            - name: NACOS_META_URL
+              value: 10.238.52.83:8848
+            - name: TMC_PROFILE
+              value: prod
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: 1Gi
+            limits:
+              memory: 4Gi
+          livenessProbe:
+            httpGet:
+              path: /fsip-project/actuator/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 90
+            timeoutSeconds: 2
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3

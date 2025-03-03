@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.tmc.TmcEmployeeMapper">
+
+    <resultMap id="BaseResultMap" type="com.asiainfo.mcp.tmc.entity.MiniUserEntity">
+        <result column="HR_EMP_CODE" property="staffId"/>
+        <result column="EMP_NAME" property="staffName"/>
+        <result column="MAIN_USERID" property="accountCode"/>
+        <result column="MOBILE_TEL" property="serialNumber"/>
+        <result column="IDENTITY_NUMBER" property="psptId"/>
+        <result column="MOBILE" property="mobile"/>
+        <result column="EMAIL_ADDRESS" property="email"/>
+        <result column="SEX" property="sex"/>
+        <result column="MAIN_POSITION" property="postDescription"/>
+        <result column="MDM_ORG_CODE" property="deptId"/>
+        <result column="ORG_NAME" property="deptName"/>
+        <result column="COMPANY_ID" property="companyId"/>
+        <result column="COMPANY_NAME" property="companyName"/>
+    </resultMap>
+
+    <select id="selectByProp" resultMap="BaseResultMap">
+        SELECT A.*, B.ORG_NAME FROM TMC_EMPLOYEE_INFO A , TW_ORG_INFO B WHERE A.MDM_ORG_CODE = B.LDAP_ORG_CODE
+        <if test="staffName !=null and  staffName !=''">
+            AND A.EMP_NAME LIKE concat('%',#{staffName}, '%')
+        </if>
+        <if test="serialNumber !=null and  serialNumber !=''">
+            AND A.MOBILE_TEL = #{serialNumber}
+        </if>
+        <if test="orgCodeList != null and orgCodeList.size() > 0">
+            AND A.MDM_ORG_CODE IN
+            <foreach collection="orgCodeList" item="value" separator="," open="(" close=")">
+                #{value}
+            </foreach>
+        </if>
+        ORDER BY A.MDM_EMP_CODE
+    </select>
+
+    <select id="selectDeptLeader" resultMap="BaseResultMap">
+        SELECT A.MAIN_USERID, A.EMP_NAME, A.IDENTITY_NUMBER, A.MOBILE_TEL, A.EMAIL_ADDRESS, A.MAIN_POSITION,
+               A.HR_EMP_CODE, A.SEX, B.LDAP_ORG_CODE, B.ORG_NAME
+        FROM TMC_EMPLOYEE_INFO A, TW_ORG_INFO B
+        WHERE A.MDM_ORG_CODE = B.LDAP_ORG_CODE AND A.MAIN_POSITION LIKE '%部门%'
+          AND B.LDAP_ORG_CODE = #{deptId}
+    </select>
+
+    <select id="selectByStaffId" resultMap="BaseResultMap">
+        SELECT DISTINCT A.MAIN_USERID, A.EMP_NAME, A.IDENTITY_NUMBER, A.MOBILE_TEL, A.EMAIL_ADDRESS, A.MAIN_POSITION,
+               A.HR_EMP_CODE, A.SEX, B.LDAP_ORG_CODE, B.ORG_NAME
+        FROM TMC_EMPLOYEE_INFO A, TW_ORG_INFO B
+        WHERE A.MDM_ORG_CODE = B.LDAP_ORG_CODE AND A.MAIN_USERID IN
+        <foreach collection="staffIdList" item="value" separator="," open="(" close=")">
+            #{value}
+        </foreach>
+    </select>
+
+    <select id="countByDeptId" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT A.MAIN_USERID) FROM TMC_EMPLOYEE_INFO A , TW_ORG_INFO B WHERE A.MDM_ORG_CODE = B.LDAP_ORG_CODE
+        <if test="orgCodeList != null and orgCodeList.size() > 0">
+            AND A.MDM_ORG_CODE IN
+            <foreach collection="orgCodeList" item="value" separator="," open="(" close=")">
+                #{value}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT A.MAIN_USERID, A.EMP_NAME, A.IDENTITY_NUMBER, A.MOBILE_TEL, A.EMAIL_ADDRESS, A.MAIN_POSITION,
+               A.HR_EMP_CODE, A.SEX, A.MDM_ORG_CODE
+        FROM TMC_EMPLOYEE_INFO A, TW_ORG_INFO B
+        WHERE A.MDM_ORG_CODE = B.LDAP_ORG_CODE AND A.POST_TYPE = '主岗'
+    </select>
+    <select id="selectUidEmpNameByStaffId" resultType="com.asiainfo.mcp.tmc.entity.MiniUserEntity">
+        SELECT
+            MAIN_USERID AS accountCode,
+            EMP_NAME AS staffName
+        FROM tmc_employee_info
+        WHERE
+            MAIN_USERID IN
+        <foreach collection="ids" item="value" separator="," open="(" close=")">
+            #{value}
+        </foreach>
+    </select>
+
+
+</mapper>

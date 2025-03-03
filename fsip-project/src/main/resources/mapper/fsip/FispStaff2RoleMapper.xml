@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FispStaff2RoleMapper">
+
+    <resultMap id="BaseResultMap" type="com.asiainfo.fsip.model.Staff2RoleModel">
+        <result column="STAFF_ID" property="staffId"/>
+        <result column="STAFF_NAME" property="staffName"/>
+        <result column="DEPT_ID" property="deptId"/>
+        <result column="DEPT_NAME" property="deptName"/>
+        <result column="COMPANY_ID" property="companyId"/>
+        <result column="ROLE_ID" property="roleId"/>
+        <result column="ATTR_CODE" property="zyxCode"/>
+        <result column="ATTR_VALUE" property="zyxName"/>
+    </resultMap>
+
+    <select id="selectByProp" resultMap="BaseResultMap">
+        SELECT b.ATTR_CODE,c.ATTR_VALUE,a.ROLE_ID, a.STAFF_ID, a.STAFF_NAME, a.DEPT_ID, a.DEPT_NAME, a.COMPANY_ID
+        FROM FSIP_STAFF_2_ROLE a
+        left join fsip_staff_2_role_extend b on a.ROLE_ID=b.ROLE_ID and a.STAFF_ID=b.STAFF_ID
+        left join fsip_static_param c on c.ATTR_TYPE=b.ATTR_TYPE and c.ATTR_CODE=b.ATTR_CODE
+        WHERE a.ROLE_ID = #{roleId}
+        <if test="staffName != null and staffName != '' ">
+            AND (a.STAFF_NAME LIKE concat('%',#{staffName}, '%')
+            OR a.DEPT_NAME LIKE concat('%',#{staffName}, '%'))
+        </if>
+        <if test="deptId != null and deptId != '' ">
+            AND a.DEPT_ID = #{deptId}
+        </if>
+        <if test="companyId != null and companyId != '' ">
+            AND a.COMPANY_ID = #{companyId}
+        </if>
+        <if test="zyxCode != null and zyxCode != '' ">
+            AND b.ATTR_CODE = #{zyxCode}
+        </if>
+    </select>
+
+    <select id="selectByStaffId" resultMap="BaseResultMap">
+        SELECT ROLE_ID, STAFF_ID, STAFF_NAME, DEPT_ID, DEPT_NAME, COMPANY_ID FROM FSIP_STAFF_2_ROLE WHERE STAFF_ID = #{staffId}
+    </select>
+
+    <insert id="batchInsert">
+        INSERT INTO FSIP_STAFF_2_ROLE(ROLE_ID, STAFF_ID, STAFF_NAME, DEPT_ID, DEPT_NAME, COMPANY_ID, OPERATOR_ID, UPDATE_TIME)
+        VALUES
+        <foreach collection='staffRoleList' index='index' item='item'  separator=','>
+            (#{item.roleId}, #{item.staffId}, #{item.staffName}, #{item.deptId}, #{item.deptName}, #{item.companyId}, #{item.operatorId}, NOW())
+        </foreach>
+    </insert>
+
+    <delete id="deleteByRoleIdAndStaffIds">
+        DELETE FROM FSIP_STAFF_2_ROLE WHERE ROLE_ID = #{roleId} AND STAFF_ID IN
+        <foreach collection="staffIdList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

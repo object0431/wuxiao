@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: fsip-rest
+
+server:
+  port: 9006
+  servlet:
+    context-path: /fsip-rest
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      # 初始化时建立物理连接的个数
+      initial-size: 4
+      # 连接池最大连接数量
+      max-active: 20
+      # 连接池的最小空闲数量
+      min-idle: 1
+      # 获取连接时最大等待时间，单位毫秒
+      max-wait: 60000
+      # 是否缓存preparedStatement, 也就是PSCache,PSCache对支持游标的数据库性能提升巨大，比如说oracle,在mysql下建议关闭。
+      pool-prepared-statements: true
+      # 要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。在Druid中，不会存在Oracle下PSCache占用内存过多的问题，可以把这个数值配置大一些，比如说100
+      max-pool-prepared-statement-per-connection-size: 20
+      # 用来检测数据库连接是否有效的sql 必须是一个查询语句(oracle中为 select 1 from dual)
+      validation-query: SELECT 1 FROM DUAL
+      validation-query-timeout: 30000
+      # 申请连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      test-on-borrow: true
+      # 归还连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      test-on-return: false
+      test-while-idle: true
+  jackson:
+    default-property-inclusion: non_null
+    date-format: yyyy-MM-dd HH:mm:ss
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: input
+      logic-delete-value: -1 # 逻辑已删除值（默认为1）
+      logic-not-delete-value: 1 # 逻辑未删除值（默认为0）
+  configuration:
+    map-underscore-to-camel-case: true
+    #控制台打印sql
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    jdbc-type-for-null: null
+  type-aliases-package: com.asiainfo.mcp.tmc.entity
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 60000
+

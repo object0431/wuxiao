@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FsipProjectAchievementMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.asiainfo.fsip.entity.FsipProjectAchievementEntity">
+        <result column="ACHIEVEMENT_ID" property="achievementId" />
+        <result column="PROJECT_NAME" property="projectName" />
+        <result column="START_DATE" property="startDate" />
+        <result column="END_DATE" property="endDate" />
+        <result column="BENEFIT" property="benefit" />
+        <result column="INNOVATION_TYPE" property="innovationType" />
+        <result column="PROJECT_TYPE" property="projectType" />
+        <result column="STATUS" property="status" />
+        <result column="APPR_NODE_CODE" property="apprNodeCode" />
+        <result column="PENDING_CODE" property="pendingCode" />
+        <result column="DING_TASK_ID" property="dingTaskId"/>
+        <result column="APPLIER_ID" property="applierId"/>
+        <result column="APPLIER_COMPANY_ID" property="applierCompanyId"/>
+        <result column="APPLIER_DEPT_ID" property="applierDeptId"/>
+        <result column="APPLY_DATE" property="applyDate"/>
+        <result column="AWARD_LEVEL" property="awardLevel"/>
+    </resultMap>
+
+    <select id="findProjectStatisticsAcheTotal"
+            resultType="com.asiainfo.fsip.model.ProjectStatisticsProTypeModel">
+        SELECT A.APPLIER_COMPANY_ID as companyId, A.APPLIER_DEPT_ID as deptId, B.ATTR_VALUE AS statType, COUNT(*) acheTotal
+        FROM FSIP_PROJECT_ACHIEVEMENT A, FSIP_STATIC_PARAM B
+        WHERE A.STATUS IN ('04','03','00') AND APPLY_DATE &gt;= STR_TO_DATE(#{startDate}, '%Y%m%d')
+        AND APPLY_DATE &lt; STR_TO_DATE(#{endDate}, '%Y%m%d')
+        AND A.PROJECT_TYPE = B.ATTR_CODE AND B.ATTR_TYPE = 'XMLX'
+        GROUP BY companyId, deptId, statType;
+    </select>
+
+    <select id="selectPush2CommentById" resultMap="BaseResultMap">
+        SELECT DISTINCT B.ACHIEVEMENT_ID, B.PROJECT_NAME
+        FROM FSIP_APPROVAL_NODE A, FSIP_PROJECT_ACHIEVEMENT B
+        WHERE A.APPR_ID = B.ACHIEVEMENT_ID AND A.PENDING_CODE IS NOT NULL AND CITY_2_PROV = #{city2Prov} AND A.APPR_ID IN
+        <foreach collection="projectIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectPendingPushByProp" resultMap="BaseResultMap">
+        SELECT *
+        FROM FSIP_PROJECT_ACHIEVEMENT A
+        WHERE
+        <choose>
+            <when test="req.achievementType == 'CITY'">
+                A.STATUS in('04','12')
+            </when>
+            <when test="req.achievementType == 'PROV'">
+                A.STATUS in('04')
+            </when>
+        </choose>
+          AND NOT EXISTS (SELECT 1 FROM FSIP_APPROVAL_NODE B
+            WHERE A.ACHIEVEMENT_ID = B.APPR_ID AND B.PENDING_CODE IS NOT NULL AND B.CITY_2_PROV = #{req.city2Prov})
+        <choose>
+            <when test="req.achievementType == 'CITY'">
+                 AND (CITY_TO_PROV_FLAG IS NULL OR CITY_TO_PROV_FLAG &lt;&gt; '1')
+            </when>
+            <when test="req.achievementType == 'PROV'">
+                AND CITY_TO_PROV_FLAG = #{req.city2Prov}
+            </when>
+        </choose>
+        <if test="req.companyId != null and req.companyId != ''">
+            AND A.APPLIER_COMPANY_ID = #{req.companyId}
+        </if>
+        <if test="req.deptId != null and req.deptId != ''">
+            AND A.APPLIER_DEPT_ID = #{req.deptId}
+        </if>
+        <if test="req.startDate != null and req.startDate != ''">
+            AND A.APPLY_DATE &gt;= STR_TO_DATE(CONCAT(#{req.startDate}, '000000'), '%Y%m%d%H%i%s')
+        </if>
+        <if test="req.endDate != null and req.endDate != ''">
+            AND A.APPLY_DATE &lt;= STR_TO_DATE(CONCAT(#{req.endDate}, '235959'), '%Y%m%d%H%i%s')
+        </if>
+        <if test="req.projectName != null and req.projectName != ''">
+            AND A.PROJECT_NAME like concat('%',#{req.projectName},'%')
+        </if>
+        ORDER BY APPLY_DATE DESC
+    </select>
+
+    <select id="selectPushedReviewByProp" resultMap="BaseResultMap">
+        SELECT * FROM FSIP_PROJECT_ACHIEVEMENT A
+        WHERE A.STATUS = '04' AND EXISTS (SELECT 1 FROM FSIP_APPROVAL_NODE B
+        WHERE A.ACHIEVEMENT_ID = B.APPR_ID AND B.PENDING_CODE IS NOT NULL AND B.CITY_2_PROV = #{req.city2Prov})
+        <choose>
+            <when test="req.achievementType == 'CITY'">
+                AND (CITY_TO_PROV_FLAG IS NULL OR CITY_TO_PROV_FLAG &lt;&gt; '1')
+            </when>
+            <when test="req.achievementType == 'PROV'">
+                AND CITY_TO_PROV_FLAG = #{req.city2Prov}
+            </when>
+        </choose>
+        <if test="req.companyId != null and req.companyId != ''">
+            AND A.APPLIER_COMPANY_ID = #{req.companyId}
+        </if>
+        <if test="req.deptId != null and req.deptId != ''">
+            AND A.APPLIER_DEPT_ID = #{req.deptId}
+        </if>
+        <if test="req.startDate != null and req.startDate != ''">
+            AND A.APPLY_DATE &gt;= STR_TO_DATE(CONCAT(#{req.startDate}, '000000'), '%Y%m%d%H%i%s')
+        </if>
+        <if test="req.endDate != null and req.endDate != ''">
+            AND A.APPLY_DATE &lt;= STR_TO_DATE(CONCAT(#{req.endDate}, '235959'), '%Y%m%d%H%i%s')
+        </if>
+        <if test="req.projectName != null and req.projectName != ''">
+            AND A.PROJECT_NAME like concat('%',#{req.projectName},'%')
+        </if>
+        ORDER BY APPLY_DATE DESC
+    </select>
+
+    <select id="selectPendingCommitByProp" resultMap="BaseResultMap">
+        SELECT A.* FROM FSIP_PROJECT_ACHIEVEMENT A
+        left join (
+            select c.ACHIEVEMENT_ID,count(1) as scoreCount from FSIP_PROJECT_ACHIEVEMENT_REVIEW c
+            inner join FSIP_APPROVAL_NODE d on c.ACHIEVEMENT_ID =d.APPR_ID and d.DEAL_STAFF_ID=c.JUDGES_ID
+            where c.JUDGES_ID=#{req.dealStaffId} and d.PENDING_CODE = #{req.pendingCode}
+            group by c.ACHIEVEMENT_ID
+        ) k on A.ACHIEVEMENT_ID =k.ACHIEVEMENT_ID
+        WHERE EXISTS (
+            SELECT 1 FROM FSIP_APPROVAL_NODE B
+                     WHERE A.ACHIEVEMENT_ID = B.APPR_ID AND B.PENDING_CODE = #{req.pendingCode} AND DEAL_STAFF_ID = #{req.dealStaffId})
+            <if test="req.projectName != null and req.projectName != ''">
+                AND A.PROJECT_NAME like concat('%',#{req.projectName},'%')
+            </if>
+        ORDER BY k.scoreCount,A.APPLY_DATE DESC
+    </select>
+
+</mapper>

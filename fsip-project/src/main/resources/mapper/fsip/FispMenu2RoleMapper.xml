@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FispMenu2RoleMapper">
+
+    <select id="selectByRoleIds" resultType="java.lang.String">
+        SELECT DISTINCT MENU_ID FROM FSIP_MENU_2_ROLE WHERE STATE = '1' AND ROLE_ID IN
+            <foreach collection="roleIds" item="value" separator="," open="(" close=")">
+                #{value}
+            </foreach>
+           ORDER BY MENU_ID
+    </select>
+
+</mapper>

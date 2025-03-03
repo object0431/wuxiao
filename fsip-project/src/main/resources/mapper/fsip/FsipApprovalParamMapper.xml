@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FsipApprovalParamMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.asiainfo.fsip.entity.FsipApprovalParamEntity">
+        <id column="APPR_TYPE" property="apprType" />
+        <result column="NODE_CODE" property="nodeCode" />
+        <result column="NODE_NAME" property="nodeName" />
+        <result column="NODE_STATE" property="nodeState" />
+        <result column="APPR_OFFICER" property="apprOfficer" />
+        <result column="DEAL_STAFF_ID" property="dealStaffId" />
+        <result column="DEAL_STAFF_NAME" property="dealStaffName" />
+        <result column="SORT" property="sort" />
+        <result column="EXT_VALUE" property="extValue" />
+        <result column="APPR_NUMBER" property="apprNumber" />
+    </resultMap>
+
+    <select id="selectApprovalByType" resultMap="BaseResultMap">
+        SELECT APPR_TYPE, NODE_CODE, NODE_NAME, APPR_OFFICER, NODE_STATE, SORT, EXT_VALUE, APPR_NUMBER FROM FSIP_APPROVAL_PARAM
+        WHERE APPR_TYPE = #{apprType} AND NODE_TYPE = 'SP' ORDER BY SORT
+    </select>
+
+    <select id="selectByType" resultMap="BaseResultMap">
+        SELECT APPR_TYPE, NODE_CODE, NODE_NAME, APPR_OFFICER, NODE_STATE, SORT FROM FSIP_APPROVAL_PARAM
+        WHERE APPR_TYPE = #{apprType} ORDER BY SORT
+    </select>
+
+    <select id="selectByTypeNode" resultMap="BaseResultMap">
+        SELECT APPR_TYPE, NODE_CODE, NODE_NAME, APPR_OFFICER, NODE_STATE, SORT
+        FROM FSIP_APPROVAL_PARAM WHERE APPR_TYPE = #{apprType} AND NODE_CODE = #{nodeCode}
+    </select>
+
+</mapper>

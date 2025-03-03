@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://localhost/nrs?characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
+  redis:
+    cluster:
+      nodes: 10.19.85.82:6371,10.19.85.82:6372,10.19.85.82:6373,10.19.85.82:6374,10.19.85.82:6375,10.19.85.82:6376
+    database: 0
+    timeout: 2000
+    password:
+    jedis:
+      pool:
+        max-active: 50
+        max-idle: 30
+        maxWait: 50000
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 10.19.85.84:8848
+
+# 文件上传
+minio:
+  url: http://10.19.85.84:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucketName: bpme
+# 联通云文件上传
+cos:
+  bucket: hnkk-dev
+  accessKey: E15PZNPIHF32M496GAKU
+  secretKey: w3zIOCECWkjeuoc1AEPlnTIZtC6BSnA2gdHtKocU
+  serviceEndpoint: cos.xx-tst.cos.tg.unicom.local
+  region: xx-tst
+  fileBaseUrl: https://cos.xx-tst.cos.tg.unicom.local/142103562682:hnkk-dev/
+# 文件上传服务选择
+fileUploadConfigParam: minio

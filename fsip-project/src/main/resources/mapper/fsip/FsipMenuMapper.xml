@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FsipMenuMapper">
+
+    <resultMap id="infoMap" type="com.asiainfo.fsip.entity.FsipMenuParamEntity">
+        <result column="MENU_ID" property="menuId"/>
+        <result column="MENU_NAME" property="menuName"/>
+        <result column="MENU_PATH" property="menuPath"/>
+        <result column="SORT" property="sort"/>
+        <result column="PARENT_MENU_ID" property="parentMenuId"/>
+    </resultMap>
+
+    <select id="selectAllMenus" resultMap="infoMap">
+        SELECT MENU_ID, MENU_NAME, MENU_PATH, SORT, PARENT_MENU_ID FROM FSIP_MENU_PARAM ORDER BY SORT
+    </select>
+
+</mapper>

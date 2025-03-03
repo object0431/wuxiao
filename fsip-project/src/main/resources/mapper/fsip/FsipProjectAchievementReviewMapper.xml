@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FsipProjectAchievementReviewMapper">
+
+    <resultMap id="StaffResultMap" type="com.asiainfo.mcp.tmc.common.entity.StaffInfo">
+        <result column="DEAL_STAFF_ID" property="mainUserId" />
+        <result column="DEAL_STAFF_NAME" property="empName" />
+    </resultMap>
+
+    <resultMap id="AchievementScoreMap" type="com.asiainfo.fsip.model.AchievementScoreVo">
+        <result column="achievementKey" property="achievementKey" />
+        <result column="avgScore" property="avgScore" />
+    </resultMap>
+
+    <select id="selectPendingCityJudges" resultMap="StaffResultMap">
+        SELECT 	DISTINCT B.DEAL_STAFF_ID, B.DEAL_STAFF_NAME
+        FROM FSIP_PROJECT_ACHIEVEMENT A, FSIP_APPROVAL_NODE B
+        WHERE A.ACHIEVEMENT_ID = B.APPR_ID AND B.NODE_CODE = 'PSWYHPS' AND A.STATUS = '04' AND B.CITY_2_PROV = '0'
+          AND NOT EXISTS (SELECT 1 FROM FSIP_PROJECT_ACHIEVEMENT_REVIEW C
+                          WHERE A.ACHIEVEMENT_ID = C.ACHIEVEMENT_ID AND C.STATUS = '00' AND B.DEAL_STAFF_ID = C.JUDGES_ID
+                            AND C.CITY_TO_PROV_FLAG IS NULL)
+          AND A.APPLIER_COMPANY_ID = #{companyId}
+    </select>
+
+    <select id="selectPendingProvJudges" resultMap="StaffResultMap">
+        SELECT DISTINCT B.DEAL_STAFF_ID, B.DEAL_STAFF_NAME
+        FROM FSIP_PROJECT_ACHIEVEMENT A, FSIP_APPROVAL_NODE B
+        WHERE A.ACHIEVEMENT_ID = B.APPR_ID AND B.NODE_CODE = 'PSWYHPS' AND A.STATUS = '04' AND A.CITY_TO_PROV_FLAG = '1' AND B.CITY_2_PROV = '1'
+          AND NOT EXISTS (SELECT 1 FROM FSIP_PROJECT_ACHIEVEMENT_REVIEW C
+                          WHERE A.ACHIEVEMENT_ID = C.ACHIEVEMENT_ID AND C.STATUS = '00' AND B.DEAL_STAFF_ID = C.JUDGES_ID AND C.CITY_TO_PROV_FLAG = '1')
+    </select>
+
+    <select id="findAchievementScore" resultMap="AchievementScoreMap">
+        select concat(a.ACHIEVEMENT_ID,'-',case when a.CITY_TO_PROV_FLAG is null then 'CITY' else 'PROV' end) as achievementKey,
+          ROUND(AVG(a.SCORE), 1) AS avgScore
+          from FSIP_PROJECT_ACHIEVEMENT_REVIEW a
+          where a.STATUS='00'  and a.ACHIEVEMENT_ID in
+            <foreach collection="achievements" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+          group by a.ACHIEVEMENT_ID,a.CITY_TO_PROV_FLAG
+    </select>
+
+</mapper>

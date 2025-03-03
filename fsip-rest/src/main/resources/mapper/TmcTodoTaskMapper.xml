@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.mcp.tmc.mapper.TmcTodoTaskMapper">
+
+    <update id="updateByTaskId">
+        UPDATE TMC_TODO_TASK SET TASK_STATUS = #{req.taskStatus}, PENDING_STATUS = #{req.pendingStatus} WHERE TASK_ID = #{req.taskId}
+    </update>
+
+    <delete id="deleteByProp">
+        DELETE FROM TMC_TODO_TASK WHERE TASK_ID = #{req.taskId} AND PENDING_USER_ID = #{req.pendingUserId} AND TASK_TYPE = #{req.taskType}
+    </delete>
+
+</mapper>

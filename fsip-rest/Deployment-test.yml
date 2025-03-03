@@ -1,0 +1,32 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: fsip-rest
+  namespace: fsip
+  labels:
+    k8s-app: fsip-rest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: fsip-rest
+  template:
+    metadata:
+      name: fsip-rest
+      labels:
+        k8s-app: fsip-rest
+    spec:
+      containers:
+        - name: fsip-rest
+          image: 'harbor.dcos.xixian.unicom.local/img-gxwsl/fsip-rest:20220323105743'
+          imagePullPolicy: Always
+          env:
+            - name: PPAPPLICATION_NAME
+              value: tmc-training
+            - name: NACOS_META_URL
+              value: 10.125.131.21:8858
+          resources:
+            requests:
+              memory: 1Gi
+            limits:
+              memory: 1Gi

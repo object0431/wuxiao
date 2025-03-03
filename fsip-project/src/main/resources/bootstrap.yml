@@ -1,0 +1,18 @@
+spring:
+  profiles:
+    active: ${TMC_PROFILE:dev}
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos
+      discovery:
+        server-addr: localhost:8848
+      config:
+        namespace: fsip
+        prefix: common
+        server-addr: localhost:8848
+        file-extension: yaml
+        group: HN
+    loadbalancer:
+      ribbon:
+        enabled: false

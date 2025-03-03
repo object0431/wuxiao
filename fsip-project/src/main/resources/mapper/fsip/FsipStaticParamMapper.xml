@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FsipStaticParamMapper">
+
+    <resultMap id="BaseResultMap" type="com.asiainfo.fsip.entity.FsipStaticParamEntity">
+        <result column="ATTR_TYPE" property="attrType" />
+        <result column="ATTR_CODE" property="attrCode" />
+        <result column="ATTR_VALUE" property="attrValue" />
+        <result column="ATTR_DESC" property="attrDesc" />
+        <result column="EXT_CODE" property="extCode" />
+        <result column="EXT_VALUE" property="extValue" />
+        <result column="SORT" property="sort" />
+    </resultMap>
+
+    <select id="selectByProp" resultMap="BaseResultMap">
+        SELECT ATTR_TYPE, ATTR_CODE, ATTR_VALUE, ATTR_DESC, EXT_CODE, EXT_VALUE, SORT
+        FROM FSIP_STATIC_PARAM WHERE 1 = 1
+        <if test="req.attrType != null">
+            and ATTR_TYPE = #{req.attrType}
+        </if>
+        <if test="req.extCode != null">
+            and EXT_CODE = #{req.extCode}
+        </if>
+        <if test="req.attrCode != null">
+            and ATTR_CODE = #{req.attrCode}
+        </if>
+        <if test="req.attrValue != null">
+            and ATTR_VALUE LIKE concat ('%',#{req.attrValue}, '%')
+        </if>
+        ORDER BY ATTR_TYPE, SORT
+    </select>
+
+    <select id="selectByExtCode" resultMap="BaseResultMap">
+        SELECT ATTR_CODE, ATTR_VALUE FROM FSIP_STATIC_PARAM WHERE ATTR_TYPE = #{attrType}
+        <if test="extCode != null">
+            and EXT_CODE = #{extCode}
+        </if>
+        ORDER BY EXT_CODE, SORT
+    </select>
+
+    <select id="selectMaxSortByAttrType" resultMap="BaseResultMap">
+        SELECT ATTR_TYPE, ATTR_CODE, ATTR_VALUE, ATTR_DESC, EXT_CODE, EXT_VALUE, SORT
+        FROM FSIP_STATIC_PARAM WHERE ATTR_TYPE = #{attrType} order by SORT DESC limit 1
+    </select>
+
+    <update id="updateByAttrCode">
+        UPDATE FSIP_STATIC_PARAM SET ATTR_VALUE = #{req.attrValue}
+        WHERE ATTR_TYPE = #{req.attrType} and ATTR_CODE = #{req.attrCode}
+    </update>
+
+    <delete id="deleteByAttrCode">
+        DELETE FROM FSIP_STATIC_PARAM WHERE ATTR_TYPE = #{attrType} AND ATTR_CODE IN
+        <foreach collection="attrCodeList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+
+</mapper>

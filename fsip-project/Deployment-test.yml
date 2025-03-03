@@ -1,0 +1,32 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: fsip-project
+  namespace: fsip
+  labels:
+    k8s-app: fsip-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: fsip-project
+  template:
+    metadata:
+      name: fsip-project
+      labels:
+        k8s-app: fsip-project
+    spec:
+      containers:
+        - name: fsip-project
+          image: 'harbor.dcos.xixian.unicom.local/img-freerdhn/fsip-project:20230804095959'
+          env:
+            - name: PPAPPLICATION_NAME
+              value: fsip-project
+            - name: NACOS_META_URL
+              value: 10.125.131.21:8858
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: 1Gi
+            limits:
+              memory: 1Gi

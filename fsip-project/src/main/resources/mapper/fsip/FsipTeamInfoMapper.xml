@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FsipTeamInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.asiainfo.fsip.entity.FsipTeamInfoEntity">
+        <id column="COMPANY_ID" property="companyId"/>
+        <result column="LOGIN_SHINE_VALUE" property="loginShineValue" />
+    </resultMap>
+
+    <resultMap id="StatisticResultMap" type="com.asiainfo.fsip.model.TeamInfoReportInfoResp">
+        <id column="COMPANY_ID" property="companyId"/>
+        <result column="TEAM_NAME" property="teamName" />
+        <result column="ACHIEVEMENT_COUNT" property="achievementCount" />
+        <result column="ACHIEVEMENT_BASE_COUNT" property="achievementBaseCount" />
+        <result column="SHINE_VALUE" property="shineValue" />
+    </resultMap>
+
+    <select id="selectPendingData" resultMap="BaseResultMap">
+        SELECT COMPANY_ID, LOGIN_SHINE_VALUE
+        FROM FSIP_TEAM_INFO WHERE UPDATE_SHINE_TIME &lt;=DATE_FORMAT(NOW(), '%Y-%m-01 00:00:00')
+         OR UPDATE_SHINE_TIME IS NULL
+    </select>
+
+    <select id="selectTeamStatisticData" resultMap="StatisticResultMap">
+        SELECT COMPANY_ID, TEAM_NAME, ACHIEVEMENT_COUNT, ACHIEVEMENT_BASE_COUNT, SHINE_VALUE + ACHIEVEMENT_COUNT * 10 AS SHINE_VALUE
+        FROM
+            (SELECT T.COMPANY_ID, T.TEAM_NAME,
+                 (SELECT COUNT(*) FROM FSIP_PROJECT_ACHIEVEMENT B WHERE B.APPLIER_COMPANY_ID = T.COMPANY_ID AND B.STATUS = '00') AS ACHIEVEMENT_COUNT,
+                 (SELECT COUNT(*) FROM FSIP_PROJECT_ACHIEVEMENT_BASE B WHERE B.APPLIER_COMPANY_ID = T.COMPANY_ID) AS ACHIEVEMENT_BASE_COUNT,
+                 IFNULL(T.SHINE_VALUE, 0) + IFNULL(T.LOGIN_SHINE_VALUE, 0) +
+                 IFNULL((SELECT
+                             SUM(CASE ACHIEVEMENT_TYPE WHEN 'CITY' THEN 100 WHEN 'PROV' THEN 500 ELSE 0 END ) AS SHINE_VALUE
+                         FROM
+                             FSIP_PROJECT_ACHIEVEMENT_BASE B
+                         WHERE B.APPLIER_COMPANY_ID = T.COMPANY_ID),0) AS SHINE_VALUE
+             FROM FSIP_TEAM_INFO T
+             GROUP BY COMPANY_ID, TEAM_NAME) TEMP
+    </select>
+
+</mapper>

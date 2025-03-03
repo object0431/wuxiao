@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.FsipProjectAchievementItemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.asiainfo.fsip.entity.FsipProjectAchievementItemEntity">
+        <result column="ACHIEVEMENT_ID" property="achievementId" />
+        <result column="ITEM_TYPE" property="itemType" />
+        <result column="ITEM_CODE" property="itemCode" />
+        <result column="ITEM_NAME" property="itemName" />
+        <result column="ITEM_VALUE" property="itemValue" />
+        <result column="SORT" property="sort" />
+        <result column="SCORE" property="score" />
+    </resultMap>
+
+    <select id="selectByAchievementAndJudgeId" resultMap="BaseResultMap">
+        SELECT A.ACHIEVEMENT_ID, A.ITEM_TYPE, A.ITEM_CODE, A.ITEM_NAME, A.ITEM_VALUE, A.SORT, B.SCORE,b.status scoreStatus
+        FROM FSIP_PROJECT_ACHIEVEMENT_ITEM A
+            LEFT JOIN FSIP_PROJECT_ACHIEVEMENT_REVIEW B
+                ON (A.ACHIEVEMENT_ID = B.ACHIEVEMENT_ID AND A.ITEM_CODE = B.ITEM_CODE AND B.JUDGES_ID = #{judgeId}
+                <choose>
+                    <when test='cityToProvFlag=="1"'> AND B.CITY_TO_PROV_FLAG = '1' </when>
+                    <otherwise> AND (B.CITY_TO_PROV_FLAG &lt;&gt; '1' OR B.CITY_TO_PROV_FLAG IS NULL)</otherwise>
+                </choose>)
+        WHERE A.ACHIEVEMENT_ID = #{achievementId} ORDER BY A.ITEM_TYPE, A.SORT
+    </select>
+
+</mapper>

@@ -1,0 +1,43 @@
+#spring:
+#  datasource:
+#    url: jdbc:mysql://10.125.138.175:2883/spcdb?characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
+#    username: spc@hnkk#obcluster
+#    password: QAZ2wsx3#$
+#  redis:
+#    cluster:
+#      nodes: 10.125.11.125:32535,10.125.11.126:32535
+#    database: 0
+#    timeout: 2000
+#    password: hnkk#0509
+#    jedis:
+#      pool:
+#        max-active: 50
+#        max-idle: 30
+#        maxWait: 50000
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: nacos-service:8848
+#
+## 文件上传
+#minio:
+#  url: http://10.19.85.84:9000
+#  accessKey: minioadmin
+#  secretKey: minioadmin
+#  bucketName: bpme
+## 联通云文件上传
+#cos:
+#  bucket: hnkk-dev
+#  accessKey: E15PZNPIHF32M496GAKU
+#  secretKey: w3zIOCECWkjeuoc1AEPlnTIZtC6BSnA2gdHtKocU
+#  serviceEndpoint: cos.xx-tst.cos.tg.unicom.local
+#  region: xx-tst
+#  fileBaseUrl: https://cos.xx-tst.cos.tg.unicom.local/142103562682:hnkk-dev/
+## 文件上传服务选择
+#fileUploadConfigParam: cos
+#
+#oss:
+#  endpoint: http://10.125.119.169
+#  accesskey: GFzGKhYPORNpzwl8
+#  accessKeySecret: pNYaqniCxlIp0nYZ7UQS7V0d50w6HI
+#  bucketName: bucket-testpms

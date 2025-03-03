@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.fsip.mapper.fsip.ProjectStatisticsMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ACHIEVEMENT_ID, PROJECT_NAME, START_DATE, END_DATE, BENEFIT, INNOVATION_TYPE, PROJECT_TYPE, STATUS, APPR_NODE_CODE, PENDING_CODE, DING_TASK_ID, APPLIER_ID, APPLIER_NAME, APPLIER_COMPANY_ID, APPLIER_DEPT_ID, APPLY_DATE, CITY_TO_PROV_FLAG, BACK_IMAGE
+    </sql>
+
+    <!-- 成果统计表 -->
+    <sql id="innovationStatistics">
+        SELECT APPLIER_COMPANY_ID, A.APPLIER_DEPT_ID, B.ATTR_VALUE AS STAT_TYPE, COUNT(*) INIT_NUM
+        FROM FSIP_PROJECT_INITIATION A, FSIP_STATIC_PARAM B
+        WHERE STATUS = '00' AND APPLY_DATE &gt;= STR_TO_DATE(#{req.startDate}, '%Y%m%d')
+        AND APPLY_DATE &lt;= STR_TO_DATE(#{req.endDate}, '%Y%m%d %H:%i:%s')
+        <include refid="queryCriteria">
+            <property name="req" value="req"/>
+        </include>
+    </sql>
+
+    <!-- 立项统计表 -->
+    <sql id="projectStatistics">
+        SELECT APPLIER_COMPANY_ID, A.APPLIER_DEPT_ID, B.ATTR_VALUE AS STAT_TYPE, COUNT(*) ACHE_TOTAL
+        FROM FSIP_PROJECT_ACHIEVEMENT A, FSIP_STATIC_PARAM B
+        WHERE A.STATUS IN ('04','03','00') AND APPLY_DATE &gt;= STR_TO_DATE(#{req.startDate}, '%Y%m%d')
+        AND APPLY_DATE &lt;= STR_TO_DATE(#{req.endDate}, '%Y%m%d %H:%i:%s')
+        <include refid="queryCriteria">
+            <property name="req" value="req"/>
+        </include>
+    </sql>
+
+    <sql id="queryCriteria">
+        <if test="req.type == 'XMLX'">
+            AND A.PROJECT_TYPE = B.ATTR_CODE AND B.ATTR_TYPE = 'XMLX'
+        </if>
+        <if test="req.type == 'CXLX'">
+            AND A.INNOVATION_TYPE = B.ATTR_CODE AND B.ATTR_TYPE = 'CXLX'
+        </if>
+        <if test="req.companyId!=null and req.companyId!=''">
+            AND A.APPLIER_COMPANY_ID = #{req.companyId}
+        </if>
+        <if test="req.deptId!=null and req.deptId!=''">
+            AND A.APPLIER_DEPT_ID = #{req.deptId}
+        </if>
+
+        GROUP BY APPLIER_COMPANY_ID, A.APPLIER_DEPT_ID,
+        <if test="req.type == 'XMLX'">
+            PROJECT_TYPE
+        </if>
+        <if test="req.type == 'CXLX'">
+            INNOVATION_TYPE
+        </if>
+    </sql>
+
+    <!-- 先查询两张统计表中 companyId、deptId、statType 一致的数据拼接 initNum 和 acheTotal-->
+    <!-- 再查询其中一张表 companyId、deptId、statType 都不一致的数据，并通过 union 全连接-->
+    <select id="findProjectStatisticsByType"
+            resultType="com.asiainfo.fsip.model.ProjectStatisticsProTypeModel">
+        SELECT a.* FROM (
+        (SELECT
+        COALESCE(a.APPLIER_COMPANY_ID, b.APPLIER_COMPANY_ID) AS companyId,
+        COALESCE(a.APPLIER_DEPT_ID, b.APPLIER_DEPT_ID) AS deptId,
+        COALESCE(a.STAT_TYPE, b.STAT_TYPE) AS statType,
+        COALESCE(a.INIT_NUM,'') AS initNum,
+        COALESCE(b.ACHE_TOTAL,'') AS acheTotal
+        FROM
+        (
+        <include refid="innovationStatistics">
+            <property name="req" value="req"/>
+            <!--            <property name="startDate" value="#{req.startDate}"/>-->
+            <!--            <property name="endDate" value="#{req.endDate}"/>-->
+            <!--            <property name="type" value="#{req.type}"/>-->
+            <!--            <property name="companyId" value="#{req.companyId}"/>-->
+            <!--            <property name="deptId" value="#{req.deptId}"/>-->
+        </include>
+        ) AS a
+        LEFT JOIN
+        (
+        <include refid="projectStatistics">
+            <property name="req" value="req"/>
+            <!--            <property name="startDate" value="#{req.startDate}"/>-->
+            <!--            <property name="endDate" value="#{req.endDate}"/>-->
+            <!--            <property name="type" value="#{req.type}"/>-->
+            <!--            <property name="companyId" value="#{req.companyId}"/>-->
+            <!--            <property name="deptId" value="#{req.deptId}"/>-->
+        </include>
+        ) AS b
+        ON
+        a.APPLIER_COMPANY_ID = b.APPLIER_COMPANY_ID AND a.APPLIER_DEPT_ID = b.APPLIER_DEPT_ID AND a.STAT_TYPE =
+        b.STAT_TYPE)
+
+        UNION ALL
+
+        (SELECT
+        b.APPLIER_COMPANY_ID,
+        b.APPLIER_DEPT_ID,
+        b.STAT_TYPE,
+        '' AS INIT_NUM,
+        b.ACHE_TOTAL
+        FROM
+        (
+        <include refid="innovationStatistics">
+            <property name="startDate" value="startDate"/>
+            <property name="endDate" value="endDate"/>
+            <property name="type" value="type"/>
+        </include>
+        ) AS a
+        RIGHT JOIN
+        (
+        <include refid="projectStatistics">
+            <property name="startDate" value="startDate"/>
+            <property name="endDate" value="endDate"/>
+            <property name="type" value="type"/>
+        </include>
+        ) AS b
+        ON
+        b.APPLIER_COMPANY_ID = a.APPLIER_COMPANY_ID AND b.APPLIER_DEPT_ID = a.APPLIER_DEPT_ID AND b.STAT_TYPE =
+        a.STAT_TYPE
+        WHERE
+        a.APPLIER_COMPANY_ID IS NULL)
+        ) as a
+    </select>
+    <select id="findLoginEmpInfo" resultType="com.asiainfo.fsip.model.LoginEmpInfoModel">
+        SELECT a.login_account as loginAccount,MAX(a.LOGIN_TIME) AS loginTime, a.STAFF_NAME as staffName, a.dept_id as deptId,a.COMPANY_ID as companyId
+        FROM fsip_login_log a
+        WHERE a.LOGIN_TIME &gt;=STR_TO_DATE(#{req.startDate}, '%Y%m%d')
+        AND a.LOGIN_TIME &lt;= STR_TO_DATE(#{req.endDate}, '%Y%m%d %H:%i:%s')
+        <if test="req.companyId!=null and req.companyId!=''">
+            AND a.COMPANY_ID = #{req.companyId}
+        </if>
+        <if test="req.deptId!=null and req.deptId!=''">
+            AND a.DEPT_ID = #{req.deptId}
+        </if>
+        <if test="req.staffName!=null and req.staffName!=''">
+            AND a.STAFF_NAME like CONCAT('%',#{req.staffName},'%')
+        </if>
+        GROUP BY a.login_account,a.STAFF_NAME,a.dept_id,a.COMPANY_ID
+        ORDER BY a.COMPANY_ID, a.DEPT_ID
+    </select>
+
+    <select id="findDeptInfoByDeptId" resultType="com.asiainfo.mcp.tmc.common.entity.DepartmentInfo">
+        SELECT
+        a.ldap_org_code AS companyId,
+        a.org_name AS companyName,
+        b.ldap_org_code AS deptId,
+        b.org_name AS deptName
+        FROM
+        tw_org_info a
+        INNER JOIN
+        tw_org_info b
+        ON a.ldap_org_code = b.parent_ldap_code
+        WHERE
+        b.ldap_org_code IN
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>
