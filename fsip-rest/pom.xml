@@ -224,24 +224,24 @@
                 <groupId>com.aliyun</groupId>
                 <artifactId>alibaba-dingtalk-service-sdk</artifactId>
                 <version>2.0.0</version>
-                <scope>system</scope>
-                <systemPath>${project.basedir}/src/main/resources/lib/alibaba-dingtalk-service-sdk-2.0.0.jar</systemPath>
+<!--                <scope>system</scope>-->
+<!--                <systemPath>${project.basedir}/src/main/resources/lib/alibaba-dingtalk-service-sdk-2.0.0.jar</systemPath>-->
             </dependency>
 
             <dependency>
                 <groupId>com.aliyun</groupId>
                 <artifactId>dingtalk</artifactId>
                 <version>1.4.97</version>
-                <scope>system</scope>
-                <systemPath>${project.basedir}/src/main/resources/lib/dingtalk-1.4.97.jar</systemPath>
+<!--                <scope>system</scope>-->
+<!--                <systemPath>${project.basedir}/src/main/resources/lib/dingtalk-1.4.97.jar</systemPath>-->
             </dependency>
 
             <dependency>
                 <groupId>com.asiainfo.mcp</groupId>
                 <artifactId>tmc-dingding</artifactId>
                 <version>${tmc-dingding.version}</version>
-                <scope>system</scope>
-                <systemPath>${project.basedir}/src/main/resources/lib/tmc-dingding-1.0.3.jar</systemPath>
+<!--                <scope>system</scope>-->
+<!--                <systemPath>${project.basedir}/src/main/resources/lib/tmc-dingding-1.0.3.jar</systemPath>-->
             </dependency>
 
         </dependencies>
@@ -434,15 +434,15 @@
             <groupId>com.asiainfo.mcp</groupId>
             <artifactId>tmc-common</artifactId>
             <version>1.0.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/tmc-common.jar</systemPath>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/src/main/resources/lib/tmc-common.jar</systemPath>-->
         </dependency>
         <dependency>
             <groupId>com.asiainfo.mcp</groupId>
             <artifactId>tmc-dingding</artifactId>
             <version>1.0.3</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/tmc-dingding-1.0.3.jar</systemPath>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/src/main/resources/lib/tmc-dingding-1.0.3.jar</systemPath>-->
         </dependency>
         <!--<dependency>
             <groupId>com.asiainfo.mcp</groupId>
@@ -467,8 +467,8 @@
             <groupId>com.aliyun</groupId>
             <artifactId>alibaba-dingtalk-service-sdk</artifactId>
             <version>2.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/alibaba-dingtalk-service-sdk-2.0.0.jar</systemPath>
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/src/main/resources/lib/alibaba-dingtalk-service-sdk-2.0.0.jar</systemPath>-->
         </dependency>
 
     </dependencies>
