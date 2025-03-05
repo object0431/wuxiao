@@ -3,6 +3,7 @@ package com.asiainfo.fsip.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.asiainfo.fsip.client.TmcRestClient;
+import com.asiainfo.fsip.config.VerifyProperties;
 import com.asiainfo.fsip.entity.FsipFlowLogEntity;
 import com.asiainfo.fsip.mapper.fsip.FsipApprovalNodeMapper;
 import com.asiainfo.fsip.model.ApprovalApplyReq;
@@ -24,6 +25,7 @@ import com.asiainfo.mcp.tmc.dingding.model.Message;
 import com.asiainfo.mcp.tmc.dingding.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -57,6 +59,9 @@ public class PendingTaskServiceImpl implements PendingTaskService {
 
     @Resource
     private MessageService messageService;
+
+    @Resource
+    private VerifyProperties verifyProperties;
 
     @Override
     public void saveApprovalNode(String apprType, String apprId, List<Map<String, String>> nodeList) {
@@ -126,39 +131,40 @@ public class PendingTaskServiceImpl implements PendingTaskService {
                 .nodeCode(IConstants.NodeCode.SQRFQ).nodeName(IConstants.NodeCodeName.SQRFQ).nodeState("02")
                 .dealStaffId(staffInfo.getMainUserId()).dealStaffName(staffInfo.getEmpName()).remark(approvalReq.getOpinion()).build());
 
-        // 测试环境下面不走，下面全注释掉
-        return -1L;
+        if ("1".equals(verifyProperties.getUseRest())){
+            String dealStaffId = convertPendingStaff(approvalNodeList.get(0).getApproveId(), staffInfo);
+            String pcUrl = pendingModel.getPendingUrl().concat(pendingModel.getApprovalId());
 
-//        String dealStaffId = convertPendingStaff(approvalNodeList.get(0).getApproveId(), staffInfo);
-//        String pcUrl = pendingModel.getPendingUrl().concat(pendingModel.getApprovalId());
-//
-//        //调用待办接口
-//        PendingEntity addPendingReq = PendingEntity.builder()
-//                .pendingCode(pendingModel.getPendingCode())
-//                .pendingTitle(pendingModel.getPendingTitle())
-//                .pendingDate(DateUtils.getDateString())
-//                .pendingUserID(dealStaffId)
-//                .pendingURL(pcUrl)
-//                .pendingLevel(0).pendingSourceUserID(staffInfo.getMainUserId())
-//                .pendingSource(staffInfo.getEmpName())
-//                .applierId(staffInfo.getMainUserId()).applierName(staffInfo.getEmpName())
-//                .applierCompanyId(staffInfo.getCompanyId()).taskId(pendingModel.getApprovalId())
-//                .taskType(pendingModel.getTaskType()).taskStatus(pendingModel.getTaskStatus()).build();
-//        //这里测试环境报错，先注释掉
-//        BaseRsp<Void> response = restClient.addPending(new PendingEntity[]{addPendingReq});
-//        if (!ReturnCode.SUCCESS.equals(response.getRspCode())) {
-//            log.error("调用新增代办失败！".concat(response.getRspDesc()));
-//            throw new BusinessException("9001", "调用新增代办失败！".concat(response.getRspDesc()));
-//        }
-//
-//        if(!StringUtils.isEmpty(pendingModel.getMobileUrl())){
-//            UrlModel urlModel = UrlModel.builder().pcUrl(pendingModel.getPendingUrl()).mobileUrl(pendingModel.getMobileUrl())
-//                    .title(pendingModel.getPendingTitle()).build();
-//            String content = StringUtils.isEmpty(pendingModel.getContent()) ? pendingModel.getPendingTitle() : pendingModel.getContent();
-//            return this.sendDingOaMessage(pendingModel.getApprovalId(), urlModel, content, dealStaffId, staffInfo);
-//        }
-//
-//        return null;
+            //调用待办接口
+            PendingEntity addPendingReq = PendingEntity.builder()
+                    .pendingCode(pendingModel.getPendingCode())
+                    .pendingTitle(pendingModel.getPendingTitle())
+                    .pendingDate(DateUtils.getDateString())
+                    .pendingUserID(dealStaffId)
+                    .pendingURL(pcUrl)
+                    .pendingLevel(0).pendingSourceUserID(staffInfo.getMainUserId())
+                    .pendingSource(staffInfo.getEmpName())
+                    .applierId(staffInfo.getMainUserId()).applierName(staffInfo.getEmpName())
+                    .applierCompanyId(staffInfo.getCompanyId()).taskId(pendingModel.getApprovalId())
+                    .taskType(pendingModel.getTaskType()).taskStatus(pendingModel.getTaskStatus()).build();
+            //这里测试环境报错，先注释掉
+            BaseRsp<Void> response = restClient.addPending(new PendingEntity[]{addPendingReq});
+            if (!ReturnCode.SUCCESS.equals(response.getRspCode())) {
+                log.error("调用新增代办失败！".concat(response.getRspDesc()));
+                throw new BusinessException("9001", "调用新增代办失败！".concat(response.getRspDesc()));
+            }
+
+            if ("1".equals(verifyProperties.getUseDingding())){
+                if(!StringUtils.isEmpty(pendingModel.getMobileUrl())){
+                    UrlModel urlModel = UrlModel.builder().pcUrl(pendingModel.getPendingUrl()).mobileUrl(pendingModel.getMobileUrl())
+                            .title(pendingModel.getPendingTitle()).build();
+                    String content = StringUtils.isEmpty(pendingModel.getContent()) ? pendingModel.getPendingTitle() : pendingModel.getContent();
+                    return this.sendDingOaMessage(pendingModel.getApprovalId(), urlModel, content, dealStaffId, staffInfo);
+                }
+            }
+        }
+
+        return null;
     }
 
     @Override

@@ -87,3 +87,6 @@ verify:
     certf: http://10.238.25.238:28081/certificationCheck?taskType=RZSQ&certfId=
     personalApply: http://10.238.25.238:28081/personalTraining/applyReview?taskType=GRPXSQ&applyId=
     course: http://10.238.25.238:28081/coursewareManage/review?taskType=KJSH&coursewareId=
+  use:
+    rest: 0
+    dinding: 0

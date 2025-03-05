@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.asiainfo.fsip.client.TmcRestClient;
+import com.asiainfo.fsip.config.VerifyProperties;
 import com.asiainfo.fsip.constants.IFsipConstants;
 import com.asiainfo.fsip.entity.FsipApprovalNodeEntity;
 import com.asiainfo.fsip.mapper.fsip.FsipApprovalNodeMapper;
@@ -66,6 +67,9 @@ public class ApprovalServiceImpl implements ApprovalService {
 
     @Resource
     private MessageService messageService;
+
+    @Resource
+    private VerifyProperties verifyProperties;
 
     private boolean checkApprovalStaff(String apprType, String apprId, String nodeCode, String mainUserId) {
         if ("0".equals(checkApproval)) {
@@ -154,11 +158,15 @@ public class ApprovalServiceImpl implements ApprovalService {
         if(finish > -1) {//正常情况一定会大于-1，只有市级转省级审批未完成时还是-1
             String pendingCode = MapUtil.getStr(targetMap, "PENDING_CODE");
 
-            //调用总部待办更新接口
-            updatePendingStatus(pendingCode);
+            if ("1".equals(verifyProperties.getUseRest())){
+                //调用总部待办更新接口
+                updatePendingStatus(pendingCode);
+            }
 
-            //调用钉钉通知状态修改接口
-            updateDingNotifyStatus(MapUtil.getLong(targetMap, "DING_TASK_ID"));
+            if ("1".equals(verifyProperties.getUseDingding())){
+                //调用钉钉通知状态修改接口
+                updateDingNotifyStatus(MapUtil.getLong(targetMap, "DING_TASK_ID"));
+            }
 
             boolean currNodeApprovaled = checkCurrentNodeApprovaled(retModel.getTargetId(), approvalNodeList, currApprovalNode, staffInfo);
             if (!currNodeApprovaled) {

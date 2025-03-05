@@ -39,4 +39,11 @@ public class VerifyProperties {
 
     @Value("${verify.url.issues.join.pc:}")
     private String issuesjoinPcUrl;
+
+    // 是否使用rest接口，默认使用，测试环境不使用
+    @Value("${verify.use.rest:1}")
+    private String useRest;
+    // 是否使用钉钉，默认使用，测试环境不使用
+    @Value("${verify.use.dingding:1}")
+    private String useDingding;
 }

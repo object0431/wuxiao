@@ -130,7 +130,8 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
 
             loginUser.setEmpName("系统管理员");
-            loginUser.setMainUserId("admin");
+//            loginUser.setMainUserId("admin");
+            loginUser.setMainUserId("yangs229");
             loginUser.setOrgName("中国联通湖南省分公司");
             loginUser.setSex("M");
             loginUser.setMobileTel("1234567989");
