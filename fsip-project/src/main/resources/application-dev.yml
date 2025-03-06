@@ -89,4 +89,4 @@ verify:
     course: http://10.238.25.238:28081/coursewareManage/review?taskType=KJSH&coursewareId=
   use:
     rest: 0
-    dinding: 0
+    dingding: 0

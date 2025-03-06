@@ -375,7 +375,8 @@ public class StaffInfoServiceImpl implements StaffInfoService {
             return Collections.emptyList();
         }
 
-        return filterOneself(staffInfo, officerList);
+        List<MiniUserEntity> miniUserEntities = filterOneself(staffInfo, officerList);
+        return miniUserEntities;
     }
 
     private List<MiniUserEntity> filterOneself(StaffInfo staffInfo, List<MiniUserEntity> officerList) {

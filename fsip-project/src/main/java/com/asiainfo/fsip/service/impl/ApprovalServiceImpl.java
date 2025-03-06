@@ -271,19 +271,24 @@ public class ApprovalServiceImpl implements ApprovalService {
 
         String pendingCode = MapUtil.getStr(targetMap, "PENDING_CODE");
 
-        //调用总部待办更新接口
-        updatePendingStatus(pendingCode);
+        if ("1".equals(verifyProperties.getUseRest())){
+            //调用总部待办更新接口
+            updatePendingStatus(pendingCode);
+        }
 
-        //调用钉钉通知状态修改接口
-        updateDingNotifyStatus(MapUtil.getLong(targetMap, "DING_TASK_ID"));
+        if ("1".equals(verifyProperties.getUseDingding())){
+            //调用钉钉通知状态修改接口
+            updateDingNotifyStatus(MapUtil.getLong(targetMap, "DING_TASK_ID"));
 
-        String targetName = MapUtil.getStr(targetMap, "TARGET_NAME");
-        log.info("targetName = " + targetName + ", retModel = " + retModel.getRemark());
+            String targetName = MapUtil.getStr(targetMap, "TARGET_NAME");
+            log.info("targetName = " + targetName + ", retModel = " + retModel.getRemark());
 
-        //发送钉钉消息给申请人员
-        String applierId = MapUtil.getStr(targetMap, "APPLY_DEAL_ID");
-        StringBuilder content = new StringBuilder(targetName).append("被退回：").append(retModel.getRemark());
-        sendDingTextMessage(dealService.getVerifyUrl(), content.toString(), applierId);
+            //发送钉钉消息给申请人员
+            String applierId = MapUtil.getStr(targetMap, "APPLY_DEAL_ID");
+            StringBuilder content = new StringBuilder(targetName).append("被退回：").append(retModel.getRemark());
+            sendDingTextMessage(dealService.getVerifyUrl(), content.toString(), applierId);
+        }
+
     }
 
     private void updatePendingStatus(String pendingCode) {
@@ -315,29 +320,37 @@ public class ApprovalServiceImpl implements ApprovalService {
             return ApprovalModel.builder().build();
         }
 
-        String title = MapUtil.getStr(targetMap, "TARGET_NAME");
-        String applierId = MapUtil.getStr(targetMap, "APPLIER_ID");
-        String applierName = MapUtil.getStr(targetMap, "APPLIER_NAME");
-        String applierCompanyId = MapUtil.getStr(targetMap, "APPLIER_COMPANY_ID");
+        String pendingCode = null;
+        Long dingTaskId = null;
+        if ("1".equals(verifyProperties.getUseRest())){
+            String title = MapUtil.getStr(targetMap, "TARGET_NAME");
+            String applierId = MapUtil.getStr(targetMap, "APPLIER_ID");
+            String applierName = MapUtil.getStr(targetMap, "APPLIER_NAME");
+            String applierCompanyId = MapUtil.getStr(targetMap, "APPLIER_COMPANY_ID");
 
-        String pendingCode = targetId + System.currentTimeMillis();
-        PendingEntity pendingEntity = PendingEntity.builder()
-                .pendingCode(pendingCode).pendingTitle(title)
-                .pendingDate(DateUtils.getDateString()).pendingUserID(convertPendingStaff(nextStaffId))
-                .pendingURL(urlModel.getPcUrl().concat(targetId)).pendingStatus(IConstants.PendingState.DB).pendingLevel(0)
-                .pendingSourceUserID(staffInfo.getMainUserId())
-                .pendingSource(staffInfo.getEmpName())
-                .applierId(applierId).applierName(applierName)
-                .applierCompanyId(applierCompanyId).taskId(nextApprovalNode.getApprId())
-                .taskType(nextApprovalNode.getApprType()).taskStatus(nextApprovalNode.getNodeState()).build();
+            pendingCode = targetId + System.currentTimeMillis();
+            PendingEntity pendingEntity = PendingEntity.builder()
+                    .pendingCode(pendingCode).pendingTitle(title)
+                    .pendingDate(DateUtils.getDateString()).pendingUserID(convertPendingStaff(nextStaffId))
+                    .pendingURL(urlModel.getPcUrl().concat(targetId)).pendingStatus(IConstants.PendingState.DB).pendingLevel(0)
+                    .pendingSourceUserID(staffInfo.getMainUserId())
+                    .pendingSource(staffInfo.getEmpName())
+                    .applierId(applierId).applierName(applierName)
+                    .applierCompanyId(applierCompanyId).taskId(nextApprovalNode.getApprId())
+                    .taskType(nextApprovalNode.getApprType()).taskStatus(nextApprovalNode.getNodeState()).build();
 
-        BaseRsp<Void> baseRsp = restClient.addPending(new PendingEntity[]{pendingEntity});
+            BaseRsp<Void> baseRsp = restClient.addPending(new PendingEntity[]{pendingEntity});
 
-        if (!RspHelp.SUCCESS_CODE.equals(baseRsp.getRspCode())) {
-            log.error("发送待办[{}]失败:{}", pendingCode, baseRsp.getRspDesc());
-            throw new BaseException(baseRsp.getRspCode(), baseRsp.getRspDesc());
+            if (!RspHelp.SUCCESS_CODE.equals(baseRsp.getRspCode())) {
+                log.error("发送待办[{}]失败:{}", pendingCode, baseRsp.getRspDesc());
+                throw new BaseException(baseRsp.getRspCode(), baseRsp.getRspDesc());
+            }
+
+            if ("1".equals(verifyProperties.getUseDingding())){
+                dingTaskId = sendDingMessage(targetId, urlModel, title, nextStaffId, staffInfo);
+            }
         }
-        Long dingTaskId = sendDingMessage(targetId, urlModel, title, nextStaffId, staffInfo);
+
         return ApprovalModel.builder().pendingCode(pendingCode).dingTaskId(dingTaskId).build();
     }
 
