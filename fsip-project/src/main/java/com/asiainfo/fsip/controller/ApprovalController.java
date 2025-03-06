@@ -99,6 +99,11 @@ public class ApprovalController {
         try {
             String approvalType = conditionMap.get("approvalType");
             String extId = conditionMap.get("extId");
+            // 是否是省级员工
+            String hasProvince = conditionMap.get("hasProvince");
+            if ("1".equals(hasProvince) && "LXSQ".equals(approvalType)){
+                approvalType = "PLXSQ";
+            }
 
             StaffInfo staffInfo = StaffInfoUtil.getStaff();
             List<ApprovalNodeModel> approvalModelList = staffInfoService.getApprovalList(approvalType, extId, staffInfo);
