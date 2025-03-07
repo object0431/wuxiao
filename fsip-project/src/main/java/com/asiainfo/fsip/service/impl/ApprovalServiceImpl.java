@@ -156,6 +156,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 
         List<FsipApprovalNodeEntity> approvalNodeList = fsipApprovalNodeMapper.selectApprovalNodeByType(retModel.getTargetType(), retModel.getTargetId());
 
+        // 兼容省级部门的审批流程
+        if (approvalNodeList.size() == 3){
+            approvalNodeList.get(1).setNodeState("03");
+        }
+
         FsipApprovalNodeEntity currApprovalNode = getApprovalParam(approvalNodeList, nodeCode);
 
         targetMap.put("NODE_CODE", currApprovalNode.getNodeCode());
