@@ -26,6 +26,7 @@ import com.asiainfo.mcp.tmc.common.util.RspHelp;
 import com.asiainfo.mcp.tmc.dingding.model.Message;
 import com.asiainfo.mcp.tmc.dingding.service.MessageService;
 import com.asiainfo.mcp.tmc.sso.util.StaffInfoUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,6 +38,7 @@ import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -136,6 +138,13 @@ public class ApprovalServiceImpl implements ApprovalService {
 
         String convertId = convertMap.get(staffId);
         return StringUtils.isEmpty(convertId) ? staffId : convertId;
+    }
+
+    @Override
+    public List<FsipApprovalNodeEntity> getApprovalNodeList(String extId) {
+        QueryWrapper<FsipApprovalNodeEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("APPR_ID", extId);
+        return fsipApprovalNodeMapper.selectList(queryWrapper);
     }
 
     /**
@@ -377,7 +386,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 
     private ApprovalDealService getDealService(String apprType) {
         String beanName = null;
-        if (IFsipConstants.TaskType.LXSQ.equals(apprType)) {
+        if (IFsipConstants.TaskType.LXSQ.equals(apprType) || "PLXSQ".equals(apprType)) {
             beanName = "projectApprovalDealService";
         } else if (IFsipConstants.TaskType.CGSQ.equals(apprType)) {
             beanName = "projectAchievementApprovalDealService";

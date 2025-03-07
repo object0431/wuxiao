@@ -47,6 +47,7 @@ public class ProjectQueryRsp {
         private String startTime;
         private String endTime;
         private String typeAttrCode;
+        private String apprNodeCode;
         private List<ProjectAttr> projectAttrList;
     }
 

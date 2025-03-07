@@ -227,6 +227,7 @@ public class StaffInfoServiceImpl implements StaffInfoService {
             }
 
             List<MiniUserEntity> officerList;
+            // 部门领导
             if (IFsipConstants.ApprovalLevel.APPROVAL_LEVEL_DEPT_LEADER.equals(officer)) {
                 officerList = getDeptLeader(officer, staffInfo);
             } else {

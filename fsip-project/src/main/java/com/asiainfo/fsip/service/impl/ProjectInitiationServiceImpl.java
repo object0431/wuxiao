@@ -118,15 +118,31 @@ public class ProjectInitiationServiceImpl implements ProjectInitiationService {
         if ("1".equals(saveProjectReq.getOperateType())) {
             String pendingCode = tranceNoTool.getCommonId(IFsipConstants.TaskType.LXSQ);
             String pendindTitle = "立项申请-".concat(entity.getProjectName()).concat("-").concat(entity.getApplierName());
+            String taskType = IFsipConstants.TaskType.LXSQ;
+            // 如果是省分部门
+            if (saveProjectReq.getApplyReq().getApprovalNodeList().size() > 0){
+                ApprovalApplyReq.ApprovalNode approvalNode = saveProjectReq.getApplyReq().getApprovalNodeList().get(0);
+                if ("PBMLDSP".equals(approvalNode.getNodeCode())){
+                    taskType = "PLXSQ";
+                }
+            }
             PendingModel pendingModel = PendingModel.builder().operType(IConstants.OperType.BL)
                     .approvalReq(saveProjectReq.getApplyReq()).pendingCode(pendingCode).pendingTitle(pendindTitle)
-                    .taskType(IFsipConstants.TaskType.LXSQ).approvalId(projectId).content(content)
+                    .taskType(taskType).approvalId(projectId).content(content)
                     .pendingUrl(verifyProperties.getProjectPcUrl()).mobileUrl(verifyProperties.getProjectMobileUrl())
                     .taskStatus(IConstants.State.BMLDSP).build();
             Long dingTaskId = pendingTaskService.applyApproval(pendingModel, staffInfo);
             FsipProjectInitiationEntity updateEntity = new FsipProjectInitiationEntity();
             updateEntity.setProjectId(projectId);
             updateEntity.setApprNodeCode(IConstants.NodeCode.BMLDSP);
+            // 如果是省分部门领导，则进行处理
+            if (saveProjectReq.getApplyReq().getApprovalNodeList().size() > 0){
+                ApprovalApplyReq.ApprovalNode approvalNode = saveProjectReq.getApplyReq().getApprovalNodeList().get(0);
+                String nodeCode = approvalNode.getNodeCode();
+                if ("PBMLDSP".equals(nodeCode)){
+                    updateEntity.setApprNodeCode(nodeCode);
+                }
+            }
             updateEntity.setPendingCode(pendingCode);
             updateEntity.setDingTaskId(dingTaskId);
             fsipProjectInitiationMapper.updateById(updateEntity);
@@ -206,6 +222,7 @@ public class ProjectInitiationServiceImpl implements ProjectInitiationService {
                                 .applyCompany(v.getApplierCompanyId())
                                 .applyCompanyName(cacheService.getCompanyMap().get(v.getApplierCompanyId()))
                                 .applyDept(v.getApplierDeptId())
+                                .apprNodeCode(v.getApprNodeCode())
                                 .applyDeptName(departmentInfo == null ? "" : departmentInfo.getDeptName())
                                 .projectAttrList(projectAttrList).build()
                 );
@@ -238,7 +255,14 @@ public class ProjectInitiationServiceImpl implements ProjectInitiationService {
                 ));
             }
             List<ProjectDetailRsp.ApprovalFlow> approvalFlowList = new ArrayList<>();
-            List<FlowLogModel> flowLogModelList = flowLogService.queryFlowLogById(IFsipConstants.TaskType.LXSQ, projectId);
+            String taskType = IFsipConstants.TaskType.LXSQ;
+            // 省分管领导
+            if ("PBMLDSP".equals(entity.getApprNodeCode()) ||
+                    "PFGFLD".equals(entity.getApprNodeCode()) ||
+                    "PFGLD".equals(entity.getApprNodeCode())){
+                taskType = "PLXSQ";
+            }
+            List<FlowLogModel> flowLogModelList = flowLogService.queryFlowLogById(taskType, projectId);
             if (!CollectionUtils.isEmpty(flowLogModelList)) {
                 flowLogModelList.forEach(v -> approvalFlowList.add(
                         ProjectDetailRsp.ApprovalFlow.builder()

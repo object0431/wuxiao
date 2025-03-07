@@ -71,9 +71,16 @@ public class ProjectApprovalDealServiceImpl implements ApprovalDealService {
         fsipProjectInitiationMapper.updateById(initiationEntity);
 
         String nodeCode = MapUtil.getStr(targetMap, "NODE_CODE");
-        FsipApprovalParamEntity paramEntity = fsipApprovalParamMapper.selectByTypeNode(IFsipConstants.TaskType.LXSQ,nodeCode);
+        // 兼容省级部门审批流程
+        String flowType = IFsipConstants.TaskType.LXSQ;
+        if ("PFGLD".equals(nodeCode) ||
+                "PFGFLD".equals(nodeCode) ||
+                "PBMLDSP".equals(nodeCode)){
+            flowType = "PLXSQ";
+        }
+        FsipApprovalParamEntity paramEntity = fsipApprovalParamMapper.selectByTypeNode(flowType,nodeCode);
         FsipFlowLogEntity flowLog = FsipFlowLogEntity.builder()
-                .flowType(IFsipConstants.TaskType.LXSQ)
+                .flowType(flowType)
                 .extId(targetId)
                 .nodeCode(nodeCode)
                 .nodeName(paramEntity==null?"":paramEntity.getNodeName())

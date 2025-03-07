@@ -150,8 +150,15 @@ public class FlowLogServiceImpl implements FlowLogService {
     }
 
     @Override
-    public FlowLogModel queryCurrentNode(String flowType, String extId) {
+    public FlowLogModel queryCurrentNode(String flowType2, String extId) {
+        String flowType = flowType2;
         List<FsipFlowLogEntity> flowLogEntityList = fsipFlowLogMapper.selectByTypeAndId(flowType, extId);
+        if (CollUtil.isEmpty(flowLogEntityList)){
+            flowLogEntityList = fsipFlowLogMapper.selectByTypeAndId("PLXSQ", extId);
+            if (flowLogEntityList.size() > 0){
+                flowType = "PLXSQ";
+            }
+        }
 
         if (CollUtil.isEmpty(flowLogEntityList)) {
             return FlowLogModel.builder().nodeCode(IConstants.NodeCode.SQRFQ)

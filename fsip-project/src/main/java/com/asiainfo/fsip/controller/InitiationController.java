@@ -1,6 +1,7 @@
 package com.asiainfo.fsip.controller;
 
 import com.asiainfo.fsip.constants.IFsipConstants;
+import com.asiainfo.fsip.entity.FsipApprovalNodeEntity;
 import com.asiainfo.fsip.model.*;
 import com.asiainfo.fsip.service.ApprovalService;
 import com.asiainfo.fsip.service.CacheService;
@@ -96,8 +97,17 @@ public class InitiationController {
     @PostMapping("/approvalProject")
     public BaseRsp<Object> approvalProject(@RequestBody ProjectApprovalReq req) {
         StaffInfo staffInfo = StaffInfoUtil.getStaff();
+        String taskType = IFsipConstants.TaskType.LXSQ;
+        // 获取省级部门情况
+        List<FsipApprovalNodeEntity> approvalNodeList = approvalService.getApprovalNodeList(req.getProjectId());
+        if (approvalNodeList.size() > 0) {
+            FsipApprovalNodeEntity fsipApprovalNodeEntity = approvalNodeList.get(0);
+            if (!taskType.equals(fsipApprovalNodeEntity.getApprType())){
+                taskType = fsipApprovalNodeEntity.getApprType();
+            }
+        }
         ApprovalRetModel approvalRetModel = ApprovalRetModel.builder()
-                .targetType(IFsipConstants.TaskType.LXSQ)
+                .targetType(taskType)
                 .targetId(req.getProjectId())
                 .retType(req.getRetType())
                 .remark(req.getRemark())

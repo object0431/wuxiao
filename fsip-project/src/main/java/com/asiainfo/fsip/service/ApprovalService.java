@@ -28,4 +28,6 @@ public interface ApprovalService {
      * 待办工号转换(测试用)
      */
     String convertPendingStaff(String staffId);
+
+    List<FsipApprovalNodeEntity> getApprovalNodeList(String extId);
 }
