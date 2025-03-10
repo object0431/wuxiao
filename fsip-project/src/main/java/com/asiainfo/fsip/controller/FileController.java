@@ -64,7 +64,15 @@ public class FileController {
         }
 //        FileModel fileModel = ossService.uploadFile(name, inputStream);
 //        fileModel.setOriginalFilename(file.getOriginalFilename());
-        return null;
+
+        // 测试代码 （模拟文件上传）
+        FileModel fileModel = new FileModel();
+        fileModel.setFileType(file.getContentType());
+        fileModel.setFileName(name);
+        fileModel.setContent("");
+        fileModel.setOriginalFilename(file.getOriginalFilename());
+        fileModel.setUrl("");
+        return fileModel;
     }
 
     /**

@@ -194,7 +194,7 @@ public class ApprovalServiceImpl implements ApprovalService {
                 //成果申请 评审是多人评审  由地市专干 统一发送给评委会
                 if (IFsipConstants.TaskType.CGSQ.equals(retModel.getTargetType()) && IConstants.NodeCode.BMLDSP.equals(nodeCode)) {
                     //更新表状态
-                    dealService.modifyApprovalState(retModel.getTargetId(), targetMap, IFsipConstants.Status.PSWYH
+                    dealService.modifyApprovalState(retModel.getTargetId(), targetMap, "00"
                             , retModel.getRemark(), staffInfo, retModel.getExt());
                 } else {
                     dealService.complete(retModel.getTargetId());

@@ -1062,6 +1062,10 @@ public class ProjectAchievementServiceImpl implements ProjectAchievementService 
         projectModel.setSjcgspName(cacheService.getParamValue("SJZSJCG_SP", project.getSjcgspStatus()));
 
         projectModel.setStatusName(cacheService.getParamValue("STATE", project.getStatus()));
+        // 工会主席审批
+        if ("02".equals(project.getStatus())){
+            projectModel.setStatusName("工会主席审批");
+        }
         if (!ObjectUtils.isEmpty(project.getApplierDeptId())) {
             DepartmentInfo departmentInfo = cacheService.getDepartment(project.getApplierDeptId());
             if (departmentInfo != null) {
